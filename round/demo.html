@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0, user-scalable=no">
+    	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    	<meta name="format-detection" content="telephone=no"/>
+		<title></title>
+		<link rel="stylesheet" href="css/public.css"/>
+		<link rel="stylesheet" href="css/fonts.css" />
+		<link rel="stylesheet" href="css/style.css" />
+	</head>
+	<script src="http://hammerjs.github.io/dist/hammer.min.js"></script>
+	<body>
+		<div id="radmenu" class="round">
+			<button id="menubtn">菜单</button>
+			<ul style="display: block;">
+				<li>
+					<a href="#">
+						<span class="icon-newspaper"></span>
+						<i>文字文字</i>
+					</a>
+				</li>
+				<li>
+					<a href="#">
+						<span class="icon-home"></span>
+						<i>文字文字</i>
+					</a>
+				</li>
+				<li>
+					<a href="#">
+						<span class="icon-qrcode"></span>
+						<i>文字文字</i>
+					</a>
+				</li>
+				<li>
+					<a href="#">
+						<span class="icon-address-book"></span>
+						<i>文字文字</i>
+					</a>
+				</li>
+				<li>
+					<a href="#">
+						<span class="icon-envelop"></span>
+						<i>文字文字</i>
+					</a>
+				</li>
+				<li>
+					<a href="#">
+						<span class="icon-map2"></span>
+						<i>文字文字</i>
+					</a>
+				</li>
+			</ul>
+			<ul style="display: none;">
+				<li>
+					<a href="#">
+						<span class="icon-calendar"></span>
+						<i>文字文字</i>
+					</a>
+				</li>
+				<li>
+					<a href="#">
+						<span class="icon-bubbles"></span>
+						<i>文字文字</i>
+					</a>
+				</li>
+				<li>
+					<a href="#">
+						<span class="icon-hour-glass"></span>
+						<i>文字文字</i>
+					</a>
+				</li>
+				<li>
+					<a href="#">
+						<span class="icon-binoculars"></span>
+						<i>文字文字</i>
+					</a>
+				</li>
+				<li>
+					<a href="#">
+						<span class="icon-gift"></span>
+						<i>文字文字</i>
+					</a>
+				</li>
+				<li>
+					<a href="#">
+						<span class="icon-trophy"></span>
+						<i>文字文字</i>
+					</a>
+				</li>
+			</ul>
+		</div>
+		<!--<p id="txt"></p>-->
+	</body>
+</html>
+<script>
+	window.onload=function(){
+		var radmenu=document.getElementById('radmenu');
+		var menubtn=document.getElementById('menubtn');
+		var ali=radmenu.children[1].children;
+		var ali2=radmenu.children[2].children;
+		var ox=menubtn.offsetLeft+menubtn.clientWidth/2;
+		var oy=menubtn.offsetTop+radmenu.offsetTop+menubtn.clientHeight/2;
+		//初始化元素角度
+		var curA=360/6;		
+		var menu=1;	//菜单按钮状态
+		var preX,preY;//上一次鼠标点的坐标
+		var curX,curY;//本次鼠标点的坐标
+		var preAngle;//上一次鼠标点与圆心(150,150)的X轴形成的角度(弧度单位)
+		var transferAngle;//当前鼠标点与上一次preAngle之间变化的角度		
+		var angle = 0;
+		//获取按钮圆心坐标位置
+		
+		//初始化写入样式
+		setStyle(ali,angle,curA);
+		setStyle(ali2,angle,curA);
+		document.addEventListener('touchstart',function(event){
+			try{
+				event.preventDefault();
+				var touch=event.touches[0];
+				preX=Number(touch.pageX);
+				preY=Number(touch.pageY);
+				preAngle=Math.atan2(preY-oy,preX-ox);
+			}catch(e){
+				//TODO handle the exception
+			}
+		})
+		document.addEventListener('touchmove',function(event){
+			try{
+				event.preventDefault();
+				var touch=event.touches[0];
+				curX=Number(touch.pageX);
+				curY=Number(touch.pageY);
+				//当前移动位置与圆心到X轴的角度
+				var curAngle=Math.atan2(curY-oy,curX-ox);
+				//移动角度
+				transferAngle=curAngle-preAngle;
+				angle+=(transferAngle*180/Math.PI);
+				(menu==1)?setStyle(ali,angle,curA):setStyle(ali2,angle,curA);
+				preX=curX;
+				preY=curY;
+				preAngle=curAngle;
+			}catch(e){
+				//TODO handle the exception
+			}
+		})	
+		document.addEventListener('touchend',function(event){
+			event.preventDefault();
+		})		
+		
+		function setStyle(al,a,cura){
+			for (var i=1;i<=al.length;i++) {
+				var temp=a+cura*i;				
+				temp=(temp.toString().search('-')<0)?'-'+temp:temp.toString().replace(/\-/,"");		//取反	
+				al[i-1].setAttribute("style","-webkit-transform: rotate("+(a+cura*i)+"deg) translateX(130px);transform: rotate("+(a+cura*i)+"deg) translateX(130px);");
+				al[i-1].children[0].setAttribute("style","-webkit-transform: rotate("+temp+"deg);transform: rotate("+temp+"deg);");
+			}
+		}		
+		
+		menubtn.addEventListener('touchstart',function(){			
+			if(menu==2){
+				radmenu.children[1].style.display="block";
+				radmenu.children[2].style.display="none";
+				menu=1;
+				angle=0;
+				setStyle(ali,angle,curA);
+			}else{				
+				radmenu.children[1].style.display="none";
+				radmenu.children[2].style.display="block";
+				menu=2;
+				angle=0;
+				setStyle(ali2,angle,curA);
+			}
+		})
+		
+	}
+	
+</script>
